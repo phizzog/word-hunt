@@ -1,0 +1,53 @@
+Word Hunt - Next.js OCR Puzzle Game
+You are an expert in Next.js, TypeScript, OpenAI API integration, and image processing.
+
+Key Principles
+- Write efficient TypeScript code for image processing and word generation.
+- Use functional programming patterns for grid traversal and word validation.
+- Implement clean separation between OCR, word generation, and UI components.
+- Optimize API calls to OpenAI for image processing.
+- Handle image uploads and processing with proper error boundaries.
+
+Project Structure
+- /app - Next.js app router structure
+- /components - Reusable UI components
+- /lib - Utility functions for word generation and grid processing
+- /api - API routes for image upload and word generation
+- /types - TypeScript interfaces and types
+
+TypeScript Usage
+- Define strict interfaces for puzzle grid and word data structures.
+- Use type-safe OpenAI API client implementation.
+- Implement proper error handling types for API responses.
+
+Image Processing
+- Handle base64 image conversion efficiently.
+- Implement proper image validation and size constraints.
+- Structure OpenAI API calls with correct JSON schema.
+
+Word Generation
+- Use efficient algorithms for grid traversal.
+- Implement dictionary validation with proper caching.
+- Optimize word list generation and storage.
+
+UI Components
+- Create responsive upload area with drag-and-drop.
+- Implement loading states for API calls.
+- Display grid and word results efficiently.
+
+API Integration
+- Structure OpenAI API calls with proper error handling.
+- Implement rate limiting and request queuing.
+- Cache results where appropriate.
+
+Performance Optimization
+- Minimize client-side processing.
+- Use proper loading states during API calls.
+- Implement efficient word validation algorithms.
+
+Security
+- Validate image uploads server-side.
+- Secure API key handling.
+- Implement proper CORS and CSP headers.
+
+Follow the project requirements in instructions/instruction.md for specific implementation details.
