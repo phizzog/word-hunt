@@ -10,7 +10,7 @@ export const openai = new OpenAI({
 
 export interface GridResponse {
   grid: string[][];
-  correct_letters: string[];
+  gridSize: 4 | 5;
 }
 
 export async function processImage(base64Image: string): Promise<GridResponse> {
@@ -32,33 +32,25 @@ export async function processImage(base64Image: string): Promise<GridResponse> {
     response_format: {
       type: "json_schema",
       json_schema: {
-        name: "word_hunt",
+        name: "word_hunt_puzzle",
         strict: true,
         schema: {
           type: "object",
           properties: {
             grid: {
               type: "array",
-              description: "A 4x4 grid of letters for the word hunt.",
+              description: "A 2D array representing the characters in the word hunt puzzle.",
               items: {
                 type: "array",
-                description: "A single row of the letter grid.",
+                description: "A single row of the grid.",
                 items: {
                   type: "string",
-                  description: "A single letter in the row."
+                  description: "A single character in the grid."
                 }
-              }
-            },
-            correct_letters: {
-              type: "array",
-              description: "The correct letters extracted from each row of the word hunt grid.",
-              items: {
-                type: "string",
-                description: "The correct letter from a row."
               }
             }
           },
-          required: ["grid", "correct_letters"],
+          required: ["grid"],
           additionalProperties: false
         }
       }
@@ -77,10 +69,30 @@ export async function processImage(base64Image: string): Promise<GridResponse> {
 
   try {
     const parsed = JSON.parse(result);
-    if (!parsed.grid || !Array.isArray(parsed.grid) || !parsed.correct_letters || !Array.isArray(parsed.correct_letters)) {
+    if (!parsed.grid || !Array.isArray(parsed.grid)) {
       throw new Error('Invalid response format');
     }
-    return parsed as GridResponse;
+
+    const gridSize = parsed.grid.length;
+    if (gridSize !== 4 && gridSize !== 5) {
+      throw new Error('Invalid grid size - must be 4x4 or 5x5');
+    }
+
+    for (const row of parsed.grid) {
+      if (!Array.isArray(row) || row.length !== gridSize) {
+        throw new Error('Invalid grid format - rows must match grid size');
+      }
+      for (const cell of row) {
+        if (typeof cell !== 'string' || !/^[A-Z]$/.test(cell)) {
+          throw new Error('Invalid grid content - each cell must be a single uppercase letter');
+        }
+      }
+    }
+
+    return {
+      grid: parsed.grid,
+      gridSize: gridSize as 4 | 5
+    };
   } catch (error) {
     console.error('Failed to parse OpenAI response:', result);
     throw new Error('Invalid response format from OpenAI');

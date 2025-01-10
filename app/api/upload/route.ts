@@ -41,6 +41,7 @@ export async function POST(request: Request) {
       return NextResponse.json({
         success: true,
         grid: result.grid,
+        gridSize: result.gridSize
       });
     } catch (error) {
       console.error('OpenAI processing error:', error);

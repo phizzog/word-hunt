@@ -19,6 +19,8 @@ const DIRECTIONS: Position[] = [
 
 // Minimum word length for Word Hunt
 const MIN_WORD_LENGTH = 3;
+// Maximum word length based on grid size
+const getMaxWordLength = (gridSize: number) => gridSize * 2;
 
 export async function findWords(grid: string[][]): Promise<WordResult[]> {
   try {
@@ -28,13 +30,16 @@ export async function findWords(grid: string[][]): Promise<WordResult[]> {
     return [];
   }
 
+  const gridSize = grid.length; // Determine grid size (4 or 5)
+  const maxWordLength = getMaxWordLength(gridSize);
+  
   const results = new Map<string, WordResult>();
-  const visited = Array(4).fill(null).map(() => Array(4).fill(false));
+  const visited = Array(gridSize).fill(null).map(() => Array(gridSize).fill(false));
 
   // Start from each cell in the grid
-  for (let row = 0; row < 4; row++) {
-    for (let col = 0; col < 4; col++) {
-      findWordsFromCell(grid, row, col, '', visited, [], results);
+  for (let row = 0; row < gridSize; row++) {
+    for (let col = 0; col < gridSize; col++) {
+      findWordsFromCell(grid, row, col, '', visited, [], results, gridSize, maxWordLength);
     }
   }
 
@@ -52,7 +57,9 @@ function findWordsFromCell(
   currentWord: string,
   visited: boolean[][],
   currentPath: Position[],
-  results: Map<string, WordResult>
+  results: Map<string, WordResult>,
+  gridSize: number,
+  maxWordLength: number
 ): void {
   visited[row][col] = true;
   const newWord = currentWord + grid[row][col];
@@ -67,13 +74,13 @@ function findWordsFromCell(
     results.set(newWord, { word: newWord, path: newPath });
   }
 
-  if (newWord.length < 8) {
+  if (newWord.length < maxWordLength) {
     for (const dir of DIRECTIONS) {
       const newRow = row + dir.row;
       const newCol = col + dir.col;
 
-      if (isValidPosition(newRow, newCol) && !visited[newRow][newCol]) {
-        findWordsFromCell(grid, newRow, newCol, newWord, visited, newPath, results);
+      if (isValidPosition(newRow, newCol, gridSize) && !visited[newRow][newCol]) {
+        findWordsFromCell(grid, newRow, newCol, newWord, visited, newPath, results, gridSize, maxWordLength);
       }
     }
   }
@@ -81,8 +88,8 @@ function findWordsFromCell(
   visited[row][col] = false;
 }
 
-function isValidPosition(row: number, col: number): boolean {
-  return row >= 0 && row < 4 && col >= 0 && col < 4;
+function isValidPosition(row: number, col: number, gridSize: number): boolean {
+  return row >= 0 && row < gridSize && col >= 0 && col < gridSize;
 }
 
 export function scoreWord(word: string): number {
